@@ -8,3 +8,8 @@ factorsNumeric <- function(d) modifyList(d, lapply(d[, sapply(d, is.factor)],
 
 NAcol <- which(colSums(is.na(all)) > 0)
 sort(colSums(sapply(all[NAcol], is.na)), decreasing = TRUE)
+
+### converting a list of variables to factors
+names <- c(1:3,5)
+mydata[,names] <- lapply(mydata[,names] , factor)
+str(mydata)
