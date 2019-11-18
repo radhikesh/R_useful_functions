@@ -13,3 +13,6 @@ sort(colSums(sapply(all[NAcol], is.na)), decreasing = TRUE)
 names <- c(1:3,5)
 mydata[,names] <- lapply(mydata[,names] , factor)
 str(mydata)
+
+### generate freq table for list of cols
+lapply(data[,c("race", "gender","education")],table)
