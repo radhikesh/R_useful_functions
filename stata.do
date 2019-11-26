@@ -12,5 +12,6 @@ di "`dim'"
 * subsetting columns
 mat diff = diff[2,1..1],diff[2,5..6],diff[2,4..4]
 
+* rename column names of matrix
 local markernames a b c
 matrix rownames all = `markernames'
