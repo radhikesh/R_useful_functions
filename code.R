@@ -20,3 +20,6 @@ lapply(data[,c("race", "gender","education")],table)
 ### replace values in multiple columns using stringR
 replace <- function(x){str_replace_all(x,"\\[\\{'name':\\s|,\\s'id'.*|^'name':\\s|'","")}
 prodcompany1<- mutate_all(prodcompany, funs(replace))
+
+### round multiple numeric columns
+df <- df %>%mutate_if(is.numeric, round,3)
