@@ -23,3 +23,30 @@ prodcompany1<- mutate_all(prodcompany, funs(replace))
 
 ### round multiple numeric columns
 df <- df %>%mutate_if(is.numeric, round,3)
+
+### plot matrix of independent variable vs depended variable using gridExtra using for loop:
+library(gridExtra)
+#independent vars
+nC <- c("Facebook","GooglePlus", "LinkedIn")
+#depended vars
+y <- "SentimentHeadline"
+plotlist <- list()
+n=0
+for (j in nC)
+  local({ 
+        j <- j
+        n <- length(plotlist)+1
+        xx <- j
+        yy <- y 
+        xl <- j
+        yl <- y
+        temp <- dataset[,c(xx,yy,"Topic")]
+        temp <- temp[complete.cases(temp),]
+        p1 <-  ggplot(data=temp, mapping = aes_string(x=xx,y=yy, color="Topic")) + 
+          geom_point() + xlab(xl) + ylab(yl) 
+        
+        plotlist[[n]] <<- p1
+    
+        temp <-  NULL
+  })
+do.call(grid.arrange, plotlist)
