@@ -50,3 +50,19 @@ for (j in nC)
         temp <-  NULL
   })
 do.call(grid.arrange, plotlist)
+
+#individually loading datasets with pre-processing
+preprocess <- function(dataname){
+  data <- read_csv(file=dataname)
+  year <- str_extract(dataname,pattern = "\\d+") #extracting year from filename
+  data <- data[-1,] #removing first row
+  data <- data %>%  #adding new col
+            mutate(medYear=paste0("20",year))
+}
+
+list2env(
+  lapply(setNames(myfiles, make.names(gsub("dirname.|.csv$", "", myfiles))), 
+         function(x) {preprocess(dataname = x)}), envir = .GlobalEnv)
+
+# loading datasets simultaneouly and merging them together:
+combinedata <- do.call(rbind, lapply(myfiles, function(x){preprocess(dataname = x)}))
