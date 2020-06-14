@@ -3,6 +3,9 @@
 asNumeric <- function(x) as.numeric(as.character(x))
 factorsNumeric <- function(d) modifyList(d, lapply(d[, sapply(d, is.factor)],   
                                                    asNumeric))
+### or another way to convert all numeric to character 
+pro_df <- pro_df %>%mutate_if(is.numeric, as.character)
+
 
 ### which variables contain how many missing values
 
