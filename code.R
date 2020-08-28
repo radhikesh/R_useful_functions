@@ -69,3 +69,109 @@ list2env(
 
 # loading datasets simultaneouly and merging them together:
 combinedata <- do.call(rbind, lapply(myfiles, function(x){preprocess(dataname = x)}))
+
+# for creating one-way freq tab using flextable
+library(flextable)
+library(dplyr)
+freqtab <- function(data, colname, newcolname) {
+df <- data %>% 
+      select({{colname}}) %>% 
+      dplyr::group_by({{colname}}) %>% 
+      summarise(Freq = n(), Percentage = round(n()/nrow({{data}})*100,2)) 
+
+df1 <- data.frame(colname="Total","Freq"=sum(df$Freq),"Percentage"=round(sum(df$Percentage,na.rm = T)))
+colnames(df)[1] <- newcolname
+colnames(df1)[1] <- newcolname
+df <- df %>% bind_rows(df1)
+ft <- flextable(df)
+ft <- colformat_char(x=ft, na_str = "Missing")
+autofit(ft) 
+}
+
+# for creating cross-tab/contingency table using flextable:
+crosstabfunc <- function(data, col1, col2, newcol1name) {
+  
+  pchisq <- chisq.test(table(data[[col1]], data[[col2]]))
+  
+  if (any(pchisq$expected<5)) {
+    pfisher <- fisher.test(table(data[[col1]], data[[col2]]))
+    if (pfisher$p.value < 0.001) {
+      pvalue <- paste("P-value= <0.001","(Fisher's Exact Test)")
+    } else{
+    pvalue <- paste("P-value=",round(pfisher$p.value,3),"(Fisher's Exact Test)")}
+    
+  } else{
+    
+    if (pchisq$p.value < 0.001) { 
+      pvalue <- paste("P-value= <0.001","(Chi-Square Test)")
+    } else {
+      pvalue <- paste("P-value=",round(pchisq$p.value,3),"(Chi-Square Test)")}
+  }
+  
+  #ctab for getting both proportions and frequencies
+  output <- ctable(data[[col1]], data[[col2]], prop = "c")
+  colnames(output$cross_table)[colnames(output$cross_table)=="<NA>"] <- "Missing"
+  colnames(output$proportions)[colnames(output$proportions)=="<NA>"] <- "Missing"
+
+  
+  ct_df <- as.data.frame(output$cross_table)
+  ct_df <- spread(ct_df, key = 2, value = Freq)
+  pro_df <- as.data.frame(output$proportions)
+  pro_df <- pro_df %>% mutate_if(is.numeric, ~.x*100)  %>%mutate_if(is.numeric, round,2)
+  pro_df <- pro_df %>%mutate_if(is.numeric, as.character)
+  ct_df <-  ct_df %>%mutate_if(is.numeric, as.character)
+  pro_df <- pro_df %>%mutate_if(is.character, ~paste0(.x, "%"))
+  # 
+  col_name_pro <- colnames(pro_df)
+  ct_pro_df <- map(col_name_pro, ~ paste0(ct_df[[.x]], " (",pro_df[[.x]], ")"))
+  ct_pro_df <- as.data.frame(do.call("cbind", ct_pro_df))
+  colnames(ct_pro_df) <- col_name_pro
+  ct_pro_df <- cbind(ct_df[[1]],ct_pro_df)
+  colnames(ct_pro_df) <- colnames(ct_df)
+  colnames(ct_pro_df)[1] <- newcol1name
+  ct_pro_df[[newcol1name]]  <- as.character( ct_pro_df[[newcol1name]])
+  ct_pro_df[[newcol1name]] <- ifelse(ct_pro_df[[newcol1name]]=="<NA>", "Missing",ct_pro_df[[newcol1name]])
+  
+  
+  ### removing percentage for missings in rows
+  missing_rownum <- ct_pro_df[[newcol1name]]
+  
+  index <- which(missing_rownum=="Missing")
+  if (!is.null(index)) {
+  for ( i in 2:ncol(ct_pro_df))
+  {
+    ct_pro_df[index,i] <- str_replace_all(ct_pro_df[index,i],"\\s.*","")
+  }
+  }
+  
+  ### removing percentage for missings in col
+  missing_colnum <- colnames(ct_pro_df)
+  index <- which(missing_colnum=="Missing")
+  if (!is.null(index)) {
+    for ( i in 1:nrow(ct_pro_df))
+    {
+      ct_pro_df[i,index] <- str_replace_all(ct_pro_df[i,index],"\\s.*","")
+    }
+  }
+  
+  if (any(is.na(data[[col2]])) & is.factor(data[[col2]]))
+  {
+    col_keys <- c(newcol1name,as.character(levels(data[[col2]][!is.na(data[[col2]])])),"Missing","Total")
+  } else if (any(is.na(data[[col2]])) & is.character(data[[col2]])) {
+    
+    col_keys <- c(newcol1name,as.character(unique(data[[col2]][!is.na(data[[col2]])])),"Missing","Total")
+    
+  } else if (is.factor(data[[col2]])) { 
+    col_keys <- c(newcol1name,as.character(levels(data[[col2]])),"Total")
+  } else {
+    
+    col_keys <- c(newcol1name,as.character(unique(data[[col2]])),"Total")
+    
+  }
+  
+  ft <- flextable(ct_pro_df,col_keys=col_keys) %>% 
+        add_footer_lines(values = pvalue) %>% 
+        colformat_char(na_str="Missing") %>% autofit() %>%  theme_box()
+  ft
+  
+}
