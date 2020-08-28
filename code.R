@@ -6,6 +6,10 @@ factorsNumeric <- function(d) modifyList(d, lapply(d[, sapply(d, is.factor)],
 ### or another way to convert all numeric to character 
 pro_df <- pro_df %>%mutate_if(is.numeric, as.character)
 
+## Apply a same function to multiple columns, here I'm converting strings as blank in character column to Missing using zap_empty
+library(haven)
+i <- sapply(bob, is.character)
+bob[i] <- lapply(bob[i], zap_empty)
 
 ### which variables contain how many missing values
 
