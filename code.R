@@ -179,3 +179,6 @@ crosstabfunc <- function(data, col1, col2, newcol1name) {
   ft
   
 }
+
+## convert a number to date format
+data_temp$year.start <- as.Date(data_temp$year.start, origin = "1900-01-01")
