@@ -182,3 +182,8 @@ crosstabfunc <- function(data, col1, col2, newcol1name) {
 
 ## convert a number to date format
 data_temp$year.start <- as.Date(data_temp$year.start, origin = "1900-01-01")
+
+## Rename multiple columns at once by removing pattern
+## https://dplyr.tidyverse.org/reference/rename.html
+data <- data %>%
+        rename_with(.fn = ~str_remove_all(string = .x, pattern = "pattern"))
