@@ -1,3 +1,7 @@
+### Applying a same function across multiple columns
+table_1 <- table_1 %>% mutate(across(.cols = c(x,y,z,w), ~ifelse(.x==1,"x","")))
+table_1 <- table_1 %>% mutate(across(.cols = starts_with("width"), ~ifelse(.x==1,"x","")))
+
 ### converting all factor variable to numeric 
 
 asNumeric <- function(x) as.numeric(as.character(x))
