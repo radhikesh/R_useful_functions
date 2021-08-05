@@ -1,3 +1,8 @@
+###
+# remove rows where all column values are NA
+# ref: https://www.r-bloggers.com/2021/06/remove-rows-that-contain-all-na-or-certain-columns-in-r/
+df[rowSums(is.na(df)) != ncol(df), ]
+
 ### Applying a same function across multiple columns
 table_1 <- table_1 %>% mutate(across(.cols = c(x,y,z,w), ~ifelse(.x==1,"x","")))
 table_1 <- table_1 %>% mutate(across(.cols = starts_with("width"), ~ifelse(.x==1,"x","")))
