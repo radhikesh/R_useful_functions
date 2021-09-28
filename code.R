@@ -13,7 +13,7 @@ asNumeric <- function(x) as.numeric(as.character(x))
 factorsNumeric <- function(d) modifyList(d, lapply(d[, sapply(d, is.factor)],   
                                                    asNumeric))
 ### or another way to convert all numeric to character 
-pro_df <- pro_df %>%mutate_if(is.numeric, as.character)
+df %>% mutate(across(where(is.numeric), round, 3))
 
 ## Apply a same function to multiple columns, here I'm converting strings as blank in character column to Missing using zap_empty
 library(haven)
