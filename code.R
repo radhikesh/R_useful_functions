@@ -198,4 +198,4 @@ data <- data %>%
         rename_with(.fn = ~str_remove_all(string = .x, pattern = "pattern"))
 
 ## unzip or extract files from .tar extension
-untar(tarfile = "C:/Users/rranadiv/Downloads/bundle-54.tar.gz", exdir = "C:/Users/rranadiv/Downloads/test2/")
+untar(tarfile = "C:/Users/Downloads/bundle-54.tar.gz", exdir = "C:/Users/Downloads/test2/")
