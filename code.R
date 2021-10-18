@@ -196,3 +196,6 @@ data_temp$year.start <- as.Date(data_temp$year.start, origin = "1900-01-01")
 ## https://dplyr.tidyverse.org/reference/rename.html
 data <- data %>%
         rename_with(.fn = ~str_remove_all(string = .x, pattern = "pattern"))
+
+## unzip or extract files from .tar extension
+untar(tarfile = "C:/Users/rranadiv/Downloads/bundle-54.tar.gz", exdir = "C:/Users/rranadiv/Downloads/test2/")
