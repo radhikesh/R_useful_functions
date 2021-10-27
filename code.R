@@ -199,3 +199,6 @@ data <- data %>%
 
 ## unzip or extract files from .tar extension
 untar(tarfile = "C:/Users/Downloads/bundle-54.tar.gz", exdir = "C:/Users/Downloads/test2/")
+
+## calculate rowwise sum using dplyr:
+df <- df %>%  rowwise() %>% mutate(s = sum(dplyr::c_across(a:e)))
