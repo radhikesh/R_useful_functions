@@ -202,3 +202,8 @@ untar(tarfile = "C:/Users/Downloads/bundle-54.tar.gz", exdir = "C:/Users/Downloa
 
 ## calculate rowwise sum using dplyr:
 df <- df %>%  rowwise() %>% mutate(s = sum(dplyr::c_across(a:e)))
+
+## Add row to a data frame with total sum for each column
+df <- df %>% bind_rows(summarise(., across(where(is.numeric), sum), across(where(is.character), ~"Total")))
+
+
